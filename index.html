@@ -26,12 +26,20 @@
         transform: translateY(-10px);
       }
     }
+
+    .pink-glow {
+        box-shadow: 0 0 15px 5px rgba(255, 192, 203, 0.7);
+    }
   </style>
 </head>
 <body class="gradient-background">
   <div class="flex items-center justify-center h-screen">
     <div class="flex flex-col items-center p-4">
-      <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten with flowers" class="rounded-md h-[300px]" style="object-fit: cover;" />
+      <div class="flex items-center justify-center gap-4" id="imageContainer">
+        <img id="leftImage" src="" alt="" class="rounded-md h-[200px] hidden pink-glow" style="object-fit: cover;" />
+        <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten with flowers" class="rounded-md h-[300px] pink-glow" style="object-fit: cover;" />
+        <img id="rightImage" src="" alt="" class="rounded-md h-[200px] hidden pink-glow" style="object-fit: cover;" />
+      </div>
       <h2 id="valentineQuestion" class="text-4xl font-bold italic text-[#bd1e59] my-4">Will you be my Valentine?</h2>
       <div class="flex gap-4 pt-[20px] items-center" id="responseButtons">
         <button id="yesButton"
@@ -53,11 +61,14 @@
     const imageDisplay = document.getElementById('imageDisplay');
     const valentineQuestion = document.getElementById('valentineQuestion');
     const responseButtons = document.getElementById('responseButtons');
+    const leftImage = document.getElementById('leftImage');
+    const rightImage = document.getElementById('rightImage');
   
+    let isFirstStep = true;
     let noClickCount = 0;
-    let buttonHeight = 48; // Starting height in pixels
+    let buttonHeight = 48;
     let buttonWidth = 80;
-    let fontSize = 20; // Starting font size in pixels
+    let fontSize = 20;
     const imagePaths = [
       "./images/image1.gif",
       "./images/image2.gif",
@@ -65,30 +76,72 @@
       "./images/image4.gif",
       "./images/image5.gif",
       "./images/image6.gif",
-      "./images/image7.gif"
+      "./images/bear-kiss-bear-kisses.gif"
     ];
+
+    // Initialize the first step
+    window.addEventListener('DOMContentLoaded', () => {
+        imageDisplay.src = "./images/bear-love.gif";
+        valentineQuestion.textContent = "Hey, can I ask you something?";
+    });
   
-    noButton.addEventListener('click', function() {
-      if (noClickCount < 5) {
-        noClickCount++;
-        imageDisplay.src = imagePaths[noClickCount];
-        buttonHeight += 35; // Increase height by 5px on each click
-        buttonWidth += 35;
-        fontSize += 25; // Increase font size by 1px on each click
-        yesButton.style.height = `${buttonHeight}px`; // Update button height
-        yesButton.style.width = `${buttonWidth}px`;
-        yesButton.style.fontSize = `${fontSize}px`; // Update font size
-        if (noClickCount < 6) {
-          noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
+    noButton.addEventListener('click', () => {
+        if (isFirstStep) {
+            noButton.textContent = "Please? 🥺";
+            imageDisplay.src = "./images/begging-cat-cat.gif";
+            leftImage.src = "./images/sad2.jpeg";
+            rightImage.src = "./images/kelli2.jpeg";
+            return;
         }
-      }
+
+        if (noClickCount < 5) {
+            noClickCount++;
+            imageDisplay.src = imagePaths[noClickCount];
+            buttonHeight += 35;
+            buttonWidth += 35;
+            fontSize += 25;
+            yesButton.style.height = `${buttonHeight}px`;
+            yesButton.style.width = `${buttonWidth}px`;
+            yesButton.style.fontSize = `${fontSize}px`;
+            
+            // Switch images after second no click
+            if (noClickCount === 1) {
+                leftImage.src = "./images/sad1.jpeg";
+                rightImage.src = "./images/kelli2.jpeg";
+            }
+            
+            if (noClickCount < 6) {
+                noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
+            }
+        }
     });
   
     yesButton.addEventListener('click', () => {
-      imageDisplay.src = './images/image7.gif'; // Change to image7.gif
-      valentineQuestion.textContent = "Yayyy!! :3"; // Change the question text
-      responseButtons.style.display = 'none'; // Hide both buttons
-      confetti(); // Trigger confetti animation
+        if (isFirstStep) {
+            isFirstStep = false;
+            imageDisplay.src = imagePaths[0];
+            valentineQuestion.textContent = "Will you be my Valentine?";
+            noButton.textContent = "No";
+            // Show the side images
+            leftImage.src = "./images/evan.JPG";
+            rightImage.src = "./images/kelli.jpeg";
+            leftImage.classList.remove('hidden');
+            rightImage.classList.remove('hidden');
+            return;
+        }
+
+        imageDisplay.src = './images/bear-kiss-bear-kisses.gif';
+        valentineQuestion.innerHTML = `
+            <div class="text-center">
+                Yayyy!! :3
+                <div class="text-2xl mt-2">see you for dinner Feb 14 🌹✨🌹</div>
+            </div>
+        `;
+        responseButtons.style.display = 'none';
+        // Hide the side images
+        leftImage.classList.add('hidden');
+        rightImage.classList.add('hidden');
+        confetti();
     });
   </script>  
 </body>
